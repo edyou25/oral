@@ -6,7 +6,15 @@
   <title>oral</title>
   <style>
     body { margin: 0; background: #fff; color: #222; font: 1rem/1.65 system-ui, sans-serif; }
-    main { max-width: 40rem; margin: clamp(1.5rem, 6vw, 4rem) auto; padding: 0 1rem; }
+    main { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.75rem; max-width: 62rem; margin: clamp(1.5rem, 6vw, 4rem) auto; padding: 0 3.25rem; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 14rem; height: 100%; resize: vertical; padding: .75rem; border: 1px solid #ddd; border-radius: .25rem; background: #fff; color: inherit; font: inherit; }
+    button { position: fixed; top: 50%; transform: translateY(-50%); width: 2.5rem; height: 2.75rem; border: 0; border-radius: .25rem; background: #fff; color: #222; font: 1.6rem system-ui, sans-serif; cursor: pointer; }
+    button:hover:not(:disabled), button:focus-visible { background: #eee; }
+    button:disabled { color: #767676; cursor: default; }
+    #previous { left: .25rem; }
+    #next { right: .25rem; }
+    @media (max-width: 42rem) { main { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; padding-inline: 2.75rem; } }
+    @media (max-width: 24rem) { main { padding-inline: 2.25rem; } button { width: 1.85rem; } }
     section + section { border-top: 1px solid #ddd; margin-top: 1.25rem; padding-top: 1.25rem; }
     p { margin: 0 0 .5rem; }
     p:last-child { margin-bottom: 0; }
@@ -15,7 +23,11 @@
   </style>
 </head>
 <body>
+  <button type="button" id="previous" aria-label="上一天" title="上一天">‹</button>
+  <button type="button" id="next" aria-label="下一天" title="下一天">›</button>
   <main>
+    <div id="lessons">
+      <article data-day="1" aria-label="第 1 天">
     <section aria-label="AI 出题">
       <p>给物业打电话报修。用英语描述空调漏水的问题，并约好维修时间。</p>
       <p class="line"><span class="speaker">A</span><span>租客。空调昨晚开始漏水。周三上午你有组会，下午 3 点后在家。</span></p>
@@ -35,6 +47,66 @@
       <p class="line"><span class="speaker">B</span><span>Sure. We have a slot at four. Does that work for you?</span></p>
       <p class="line"><span class="speaker">A</span><span>Four works for me. Thanks!</span></p>
     </section>
+      </article>
+      <article hidden data-day="2" aria-label="第 2 天">
+    <section aria-label="AI 出题">
+      <p>物业来电，周三下午 4 点的维修要改期。用英语重新约时间。</p>
+      <p class="line"><span class="speaker">A</span><span>租客。周四上午你有实验，下午 5 点后可以。问清楚师傅大概几点到。</span></p>
+      <p class="line"><span class="speaker">B</span><span>物业。原来的时间取消了。周四上午 10 点或下午 5 点半可以上门。</span></p>
+    </section>
+    <section aria-label="初始对话" lang="en">
+      <p class="line"><span class="speaker">B</span><span>Hi, we need change your repair time. Can you do Thursday at ten?</span></p>
+      <p class="line"><span class="speaker">A</span><span>I have experiment in the morning. I can after five.</span></p>
+      <p class="line"><span class="speaker">B</span><span>We can come at five thirty. Is okay?</span></p>
+      <p class="line"><span class="speaker">A</span><span>Yes. What time he will arrive?</span></p>
+      <p class="line"><span class="speaker">B</span><span>Around five thirty. We call you before.</span></p>
+    </section>
+    <section aria-label="优化对话" lang="en">
+      <p class="line"><span class="speaker">B</span><span>Hi, we need to reschedule your repair. Does Thursday at ten work for you?</span></p>
+      <p class="line"><span class="speaker">A</span><span>I have an experiment that morning, but I’ll be home after five. Could we do Thursday evening instead?</span></p>
+      <p class="line"><span class="speaker">B</span><span>Sure. We have a slot at five thirty. Does that work for you?</span></p>
+      <p class="line"><span class="speaker">A</span><span>That works. What time should I expect the repair person?</span></p>
+      <p class="line"><span class="speaker">B</span><span>Around five thirty. We’ll call before we arrive.</span></p>
+    </section>
+  </article>
+    </div>
+    <textarea id="note" aria-label="Note" placeholder="Note"></textarea>
   </main>
+  <script>
+    const days = [...document.querySelectorAll('[data-day]')];
+    const previous = document.getElementById('previous');
+    const next = document.getElementById('next');
+    const note = document.getElementById('note');
+    const drafts = new Map();
+    let currentDay = 1;
+
+    const noteKey = day => 'oral:note:' + day;
+
+    function showDay() {
+      const requestedDay = Number(location.hash.slice(1));
+      currentDay = days.some(day => Number(day.dataset.day) === requestedDay) ? requestedDay : 1;
+      days.forEach(day => { day.hidden = Number(day.dataset.day) !== currentDay; });
+      previous.disabled = currentDay === 1;
+      next.disabled = currentDay === days.length;
+      try {
+        note.value = drafts.get(currentDay) ?? localStorage.getItem(noteKey(currentDay)) ?? '';
+      } catch {
+        note.value = drafts.get(currentDay) ?? '';
+      }
+    }
+
+    previous.addEventListener('click', () => { location.hash = String(currentDay - 1); });
+    next.addEventListener('click', () => { location.hash = String(currentDay + 1); });
+    window.addEventListener('hashchange', showDay);
+    note.addEventListener('input', () => {
+      drafts.set(currentDay, note.value);
+      try {
+        localStorage.setItem(noteKey(currentDay), note.value);
+      } catch {
+        note.placeholder = 'Note（当前浏览器无法保存）';
+      }
+    });
+    showDay();
+  </script>
 </body>
 </html>
