@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="双人英语口语场景练习，每天一题。">
+  <title>双人口语练习 · 第 1 天</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #172524; background: #f2f6f5; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; line-height: 1.65; }
+    main { width: min(calc(100% - 2rem), 45rem); margin: clamp(2rem, 7vw, 5rem) auto; }
+    header { padding-bottom: 1.4rem; border-bottom: 1px solid #b8cbc6; }
+    h1, h2, p { margin: 0; }
+    h1 { font-size: clamp(2rem, 7vw, 3.5rem); line-height: 1.15; }
+    h2 { font-size: 1.25rem; }
+    .day { color: #155e52; font-weight: 700; margin-bottom: .45rem; }
+    .topic { margin-top: .65rem; font-size: 1.125rem; }
+    section, details { margin-top: 1rem; padding: 1rem clamp(1rem, 4vw, 1.5rem); background: #fff; border: 1px solid #cbd9d6; border-radius: .75rem; }
+    section > p { margin-top: .6rem; }
+    .roles { display: grid; gap: .45rem; margin-block: .85rem; }
+    .roles div { display: grid; grid-template-columns: 1.6rem 1fr; }
+    dt, .speaker { font-weight: 750; color: #155e52; }
+    dd { margin: 0; }
+    summary { cursor: pointer; font-size: 1.125rem; font-weight: 700; }
+    summary:focus-visible { outline: 2px solid #155e52; outline-offset: .35rem; }
+    details[open] summary { padding-bottom: .6rem; border-bottom: 1px solid #cbd9d6; }
+    details p { display: grid; grid-template-columns: 1.6rem 1fr; margin-top: .6rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="day">第 1 天</p>
+      <h1>双人口语练习</h1>
+      <p class="topic">给物业打电话报修</p>
+    </header>
+
+    <section aria-labelledby="prompt">
+      <h2 id="prompt">AI 出题</h2>
+      <p>你们要用英语描述空调漏水的问题，并约好维修时间。</p>
+      <dl class="roles">
+        <div><dt>A</dt><dd><strong>租客。</strong>空调昨晚开始漏水。周三上午你有组会，下午 3 点后在家。</dd></div>
+        <div><dt>B</dt><dd><strong>物业。</strong>问漏水从什么时候开始。周三上午有空档，下午还有一个 4 点的空档。</dd></div>
+      </dl>
+      <p>先脱稿聊一轮。交换角色后，把周三改成周五，再聊一轮。</p>
+    </section>
+
+    <details>
+      <summary>初始答案 · AI 模拟</summary>
+      <div lang="en">
+        <p><span class="speaker">A</span><span>Hi, my air conditioner is leaking. It start last night.</span></p>
+        <p><span class="speaker">B</span><span>Is it still leaking now? Can the repair person come Wednesday morning?</span></p>
+        <p><span class="speaker">A</span><span>Yes. I have a meeting in the morning. I can at home after three. Can change to afternoon?</span></p>
+        <p><span class="speaker">B</span><span>Yes, we have four o’clock. Is that okay?</span></p>
+        <p><span class="speaker">A</span><span>Yes, four is okay. Thank you.</span></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>优化后的答案 · AI 示例</summary>
+      <div lang="en">
+        <p><span class="speaker">A</span><span>Hi, I’m calling about my air conditioner. It started leaking last night.</span></p>
+        <p><span class="speaker">B</span><span>Is it still leaking? Could someone come by on Wednesday morning?</span></p>
+        <p><span class="speaker">A</span><span>Yes, it is. I have a meeting that morning, but I’ll be home after three. Could we do Wednesday afternoon instead?</span></p>
+        <p><span class="speaker">B</span><span>Sure. We have a slot at four. Does that work for you?</span></p>
+        <p><span class="speaker">A</span><span>Four works for me. Thanks!</span></p>
+      </div>
+    </details>
+  </main>
+</body>
+</html>
