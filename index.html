@@ -28,75 +28,70 @@
   <button type="button" id="previous" aria-label="上一天" title="上一天">‹</button>
   <button type="button" id="next" aria-label="下一天" title="下一天">›</button>
   <main>
-    <div id="lessons">
-      <article data-day="1" aria-label="第 1 天">
-        <p class="date"><time datetime="2026-11-21">2026-11-21</time></p>
-    <section aria-label="AI 出题">
-      <p>给物业打电话报修。用英语描述空调漏水的问题，并约好维修时间。</p>
-      <p class="line"><span class="speaker">A</span><span>租客。空调昨晚开始漏水。周三上午你有组会，下午 3 点后在家。</span></p>
-      <p class="line"><span class="speaker">B</span><span>物业。问漏水从什么时候开始。周三上午有空档，下午还有一个 4 点的空档。</span></p>
-    </section>
-    <section aria-label="初始对话" lang="en">
-      <p class="line"><span class="speaker">A</span><span>Hi, my air conditioner is leaking. It start last night.</span></p>
-      <p class="line"><span class="speaker">B</span><span>Is it still leaking now? Can the repair person come Wednesday morning?</span></p>
-      <p class="line"><span class="speaker">A</span><span>Yes. I have a meeting in the morning. I can at home after three. Can change to afternoon?</span></p>
-      <p class="line"><span class="speaker">B</span><span>Yes, we have four o’clock. Is that okay?</span></p>
-      <p class="line"><span class="speaker">A</span><span>Yes, four is okay. Thank you.</span></p>
-    </section>
-    <section aria-label="优化对话" lang="en">
-      <p class="line"><span class="speaker">A</span><span>Hi, I’m calling about my air conditioner. It started leaking last night.</span></p>
-      <p class="line"><span class="speaker">B</span><span>Is it still leaking? Could someone come by on Wednesday morning?</span></p>
-      <p class="line"><span class="speaker">A</span><span>Yes, it is. I have a meeting that morning, but I’ll be home after three. Could we do Wednesday afternoon instead?</span></p>
-      <p class="line"><span class="speaker">B</span><span>Sure. We have a slot at four. Does that work for you?</span></p>
-      <p class="line"><span class="speaker">A</span><span>Four works for me. Thanks!</span></p>
-    </section>
-      </article>
-      <article hidden data-day="2" aria-label="第 2 天">
-    <p class="date"><time datetime="2026-11-22">2026-11-22</time></p>
-    <section aria-label="AI 出题">
-      <p>物业来电，周三下午 4 点的维修要改期。用英语重新约时间。</p>
-      <p class="line"><span class="speaker">A</span><span>租客。周四上午你有实验，下午 5 点后可以。问清楚师傅大概几点到。</span></p>
-      <p class="line"><span class="speaker">B</span><span>物业。原来的时间取消了。周四上午 10 点或下午 5 点半可以上门。</span></p>
-    </section>
-    <section aria-label="初始对话" lang="en">
-      <p class="line"><span class="speaker">B</span><span>Hi, we need change your repair time. Can you do Thursday at ten?</span></p>
-      <p class="line"><span class="speaker">A</span><span>I have experiment in the morning. I can after five.</span></p>
-      <p class="line"><span class="speaker">B</span><span>We can come at five thirty. Is okay?</span></p>
-      <p class="line"><span class="speaker">A</span><span>Yes. What time he will arrive?</span></p>
-      <p class="line"><span class="speaker">B</span><span>Around five thirty. We call you before.</span></p>
-    </section>
-    <section aria-label="优化对话" lang="en">
-      <p class="line"><span class="speaker">B</span><span>Hi, we need to reschedule your repair. Does Thursday at ten work for you?</span></p>
-      <p class="line"><span class="speaker">A</span><span>I have an experiment that morning, but I’ll be home after five. Could we do Thursday evening instead?</span></p>
-      <p class="line"><span class="speaker">B</span><span>Sure. We have a slot at five thirty. Does that work for you?</span></p>
-      <p class="line"><span class="speaker">A</span><span>That works. What time should I expect the repair person?</span></p>
-      <p class="line"><span class="speaker">B</span><span>Around five thirty. We’ll call before we arrive.</span></p>
-    </section>
-  </article>
-    </div>
-    <aside aria-label="Note">
-      <div data-note="1">
-        <p><span lang="en">It started leaking last night.</span> 用过去式交代开始时间。</p>
-        <p><span lang="en">Could we do Wednesday afternoon instead?</span> 用来提出另一个时间。</p>
-      </div>
-      <div data-note="2" hidden>
-        <p><span lang="en">We need to reschedule your repair.</span> 用 <span lang="en">reschedule</span> 表示改期。</p>
-        <p><span lang="en">What time should I expect the repair person?</span> 用来问维修师傅大概几点到。</p>
-      </div>
-    </aside>
+    <article id="lesson">
+      <p class="date"><time id="date"></time></p>
+      <section id="scenario" aria-label="AI 出题"></section>
+      <section id="draft" aria-label="初始对话" lang="en"></section>
+      <section id="revised" aria-label="优化对话" lang="en"></section>
+    </article>
+    <aside id="notes" aria-label="Note"></aside>
   </main>
+  <script src="lessons.js"></script>
   <script>
-    const lessons = [...document.querySelectorAll('[data-day]')];
-    const notes = [...document.querySelectorAll('[data-note]')];
+    const lesson = document.getElementById('lesson');
+    const date = document.getElementById('date');
+    const scenario = document.getElementById('scenario');
+    const draft = document.getElementById('draft');
+    const revised = document.getElementById('revised');
+    const notes = document.getElementById('notes');
     const previous = document.getElementById('previous');
     const next = document.getElementById('next');
     let currentDay = 1;
 
+    function paragraph(text) {
+      const element = document.createElement('p');
+      element.textContent = text;
+      return element;
+    }
+
+    function dialogueLine(line) {
+      const match = /^([AB]):\s*(.*)$/.exec(line);
+      if (!match) return paragraph(line);
+
+      const element = paragraph('');
+      const speaker = document.createElement('span');
+      const words = document.createElement('span');
+      element.className = 'line';
+      speaker.className = 'speaker';
+      speaker.textContent = match[1];
+      words.textContent = match[2];
+      element.append(speaker, words);
+      return element;
+    }
+
+    function noteLine([example, tip]) {
+      const element = paragraph('');
+      const phrase = document.createElement('span');
+      phrase.lang = 'en';
+      phrase.textContent = example;
+      element.append(phrase, ' ' + tip);
+      return element;
+    }
+
     function showDay() {
       const requestedDay = Number(location.hash.slice(1));
-      currentDay = lessons.some(lesson => Number(lesson.dataset.day) === requestedDay) ? requestedDay : 1;
-      lessons.forEach(lesson => { lesson.hidden = Number(lesson.dataset.day) !== currentDay; });
-      notes.forEach(note => { note.hidden = Number(note.dataset.note) !== currentDay; });
+      currentDay = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= lessons.length
+        ? requestedDay
+        : 1;
+
+      const entry = lessons[currentDay - 1];
+      lesson.setAttribute('aria-label', '第 ' + currentDay + ' 天');
+      date.dateTime = entry.date;
+      date.textContent = entry.date;
+      scenario.replaceChildren(paragraph(entry.prompt), ...entry.roles.map(dialogueLine));
+      draft.replaceChildren(...entry.draft.map(dialogueLine));
+      revised.replaceChildren(...entry.revised.map(dialogueLine));
+      notes.replaceChildren(...entry.notes.map(noteLine));
       previous.disabled = currentDay === 1;
       next.disabled = currentDay === lessons.length;
     }
