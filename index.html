@@ -25,8 +25,8 @@
   </style>
 </head>
 <body>
-  <button type="button" id="previous" aria-label="上一天" title="上一天">‹</button>
-  <button type="button" id="next" aria-label="下一天" title="下一天">›</button>
+  <button type="button" id="previous" aria-label="上一天" title="上一天" disabled>‹</button>
+  <button type="button" id="next" aria-label="下一天" title="下一天" disabled>›</button>
   <main>
     <article id="lesson">
       <p class="date"><time id="date"></time></p>
@@ -36,7 +36,6 @@
     </article>
     <aside id="notes" aria-label="Note"></aside>
   </main>
-  <script src="lessons.js"></script>
   <script>
     const lesson = document.getElementById('lesson');
     const date = document.getElementById('date');
@@ -46,7 +45,34 @@
     const notes = document.getElementById('notes');
     const previous = document.getElementById('previous');
     const next = document.getElementById('next');
+    let dates = [];
     let currentDay = 1;
+    let activeRequest;
+
+    async function readText(path, signal) {
+      const response = await fetch(path, { signal });
+      if (!response.ok) throw new Error('无法读取 ' + path);
+      return response.text();
+    }
+
+    function contentLines(text) {
+      return text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+    }
+
+    function parseLesson(text) {
+      const sections = { '【场景】': [], '【角色】': [], '【初始对话】': [], '【优化对话】': [], '【笔记】': [] };
+      let section;
+      for (const line of contentLines(text)) {
+        if (Object.hasOwn(sections, line)) {
+          section = sections[line];
+        } else if (section) {
+          section.push(line);
+        } else {
+          throw new Error('请在正文前填写段落标题，例如【场景】。');
+        }
+      }
+      return sections;
+    }
 
     function paragraph(text) {
       const element = document.createElement('p');
@@ -54,22 +80,19 @@
       return element;
     }
 
-    function dialogueLine(line) {
-      const match = /^([AB]):\s*(.*)$/.exec(line);
-      if (!match) return paragraph(line);
-
+    function dialogueLine(line, index) {
       const element = paragraph('');
       const speaker = document.createElement('span');
       const words = document.createElement('span');
       element.className = 'line';
       speaker.className = 'speaker';
-      speaker.textContent = match[1];
-      words.textContent = match[2];
+      speaker.textContent = index % 2 === 0 ? 'A' : 'B';
+      words.textContent = line;
       element.append(speaker, words);
       return element;
     }
 
-    function noteLine([example, tip]) {
+    function noteLine(example, tip = '') {
       const element = paragraph('');
       const phrase = document.createElement('span');
       phrase.lang = 'en';
@@ -78,28 +101,61 @@
       return element;
     }
 
-    function showDay() {
+    async function showDay() {
+      activeRequest?.abort();
+      activeRequest = new AbortController();
+      const { signal } = activeRequest;
       const requestedDay = Number(location.hash.slice(1));
-      currentDay = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= lessons.length
+      currentDay = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= dates.length
         ? requestedDay
         : 1;
 
-      const entry = lessons[currentDay - 1];
+      const day = dates[currentDay - 1];
       lesson.setAttribute('aria-label', '第 ' + currentDay + ' 天');
-      date.dateTime = entry.date;
-      date.textContent = entry.date;
-      scenario.replaceChildren(paragraph(entry.prompt), ...entry.roles.map(dialogueLine));
-      draft.replaceChildren(...entry.draft.map(dialogueLine));
-      revised.replaceChildren(...entry.revised.map(dialogueLine));
-      notes.replaceChildren(...entry.notes.map(noteLine));
+      date.dateTime = day;
+      date.textContent = day;
       previous.disabled = currentDay === 1;
-      next.disabled = currentDay === lessons.length;
+      next.disabled = currentDay === dates.length;
+      scenario.textContent = '正在读取练习…';
+      draft.replaceChildren();
+      revised.replaceChildren();
+      notes.replaceChildren();
+
+      try {
+        const text = await readText('lessons/' + day + '.txt', signal);
+        if (signal.aborted) return;
+        const parts = parseLesson(text);
+        scenario.replaceChildren(...parts['【场景】'].map(paragraph), ...parts['【角色】'].map(dialogueLine));
+        draft.replaceChildren(...parts['【初始对话】'].map(dialogueLine));
+        revised.replaceChildren(...parts['【优化对话】'].map(dialogueLine));
+        const lines = parts['【笔记】'];
+        for (let i = 0; i < lines.length; i += 2) {
+          notes.append(noteLine(lines[i], lines[i + 1]));
+        }
+      } catch (error) {
+        if (!signal.aborted) scenario.textContent = '练习加载失败。' + error.message;
+      }
+    }
+
+    async function start() {
+      try {
+        dates = contentLines(await readText('lessons/index.txt'));
+        if (!dates.length) {
+          scenario.textContent = '还没有练习。';
+          return;
+        }
+        window.addEventListener('hashchange', showDay);
+        await showDay();
+      } catch (error) {
+        scenario.textContent = location.protocol === 'file:'
+          ? '请在项目目录运行 python3 -m http.server，然后打开 http://localhost:8000。'
+          : '练习目录加载失败。' + error.message;
+      }
     }
 
     previous.addEventListener('click', () => { location.hash = String(currentDay - 1); });
     next.addEventListener('click', () => { location.hash = String(currentDay + 1); });
-    window.addEventListener('hashchange', showDay);
-    showDay();
+    start();
   </script>
 </body>
 </html>

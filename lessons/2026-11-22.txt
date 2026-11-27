@@ -1,0 +1,27 @@
+【场景】
+物业来电，周三下午 4 点的维修要改期。用英语重新约时间。
+
+【角色】
+物业。原来的时间取消了。周四上午 10 点或下午 5 点半可以上门。
+租客。周四上午你有实验，下午 5 点后可以。问清楚师傅大概几点到。
+
+【初始对话】
+Hi, we need change your repair time. Can you do Thursday at ten?
+I have experiment in the morning. I can after five.
+We can come at five thirty. Is okay?
+Yes. What time he will arrive?
+Around five thirty. We call you before.
+
+【优化对话】
+Hi, we need to reschedule your repair. Does Thursday at ten work for you?
+I have an experiment that morning, but I’ll be home after five. Could we do Thursday evening instead?
+Sure. We have a slot at five thirty. Does that work for you?
+That works. What time should I expect the repair person?
+Around five thirty. We’ll call before we arrive.
+
+【笔记】
+We need to reschedule your repair.
+用 reschedule 表示改期。
+
+What time should I expect the repair person?
+用来问维修师傅大概几点到。

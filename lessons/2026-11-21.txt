@@ -1,0 +1,47 @@
+【场景】
+给物业打电话报修。用英语描述空调漏水的问题，并约好维修时间。
+
+【角色】
+租客。空调昨晚开始漏水。周三上午你有组会，下午 3 点后在家。
+物业。问漏水从什么时候开始。周三上午有空档，下午还有一个 4 点的空档。
+
+【初始对话】
+Hi, is this AC reparing service?
+Yes, how can I help you?
+My AC started to leak water from last night.
+Oh, maybe some rope is to old and I can help you to change it. What time do you prefer for an on-site checking? Wednesday Morning?
+Em... No, I need to go to work at morning. I can return after 3 pm. 
+OK, I think I can come to your apartment at 4pm. Is 4 pm ok for you.
+Yes. And may I ask how much will it cost?
+500 HKD for on-site checking and repairing. And maybe a little more for change some ropes. That will not cost too much.
+Ok. See you at time. Bye.
+Bye.
+
+
+【优化对话】
+Hi, is this Management Office of xxx?
+Yes, how can I help you?
+I.m living in this building. My air conditionor started dripping last night.
+It might be a problem with the drain hose. Could we send someone over on Wednesday morning?
+Oh, sorry, I'll be outside that morning. I'll be home after 3 p.m.
+We have a slot at 4 p.m. Does that work for you? 
+Yes, that works. How much will it cost?
+It's HKD500 for the visit and repair. If we need to replace the drain hose, 
+
+【笔记】
+confirm identity:
+Am I speaking with/to xxxx？
+is this / is that xx 也可以。
+Could I speak to xx。我找xxx。
+
+Speaking/ Yes this is。
+
+小区物业：management of xxx / management office
+
+空调漏水：My AC is leaking/dripping。
+
+派人过去：send someone over
+
+xx时间有空： have a slot at
+
+对你来说可以吗： does that work for you?
